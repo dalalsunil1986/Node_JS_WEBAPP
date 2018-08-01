@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html ng-app="studentApp">
+<head>
+    <script src="/angular/angular.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+</head>
+<body ng-controller="studentController">
+    <div class="container">
+    <% include ../partials/header %>
+    <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Create Student
+                </div>
+                <div class="panel-body">
+    <form ng-submit="submitStudnetForm()" >
+        <div class="form-group">
+            <label for="firstName" class="col-md-4">First Name: </label><br />
+            <input type="text" id="firstName" class="form-control" ng-model="student.firstName" />
+        <div/>
+        <div class="form-group">
+            <label for="lastName" class="col-md-4">Last Name</label><br />
+             <input type="text" id="lastName" class="form-control" ng-model="student.lastName" />
+         </div>
+         <div class="form-group">    
+            <label for="dob" class="col-md-4">DoB</label><br />
+            <input type="date" id="dob" class="form-control" ng-model="student.DoB" />
+         <div/>   
+          <div class="form-group">
+            <label for="gender" class="col-md-4">Gender</label> <br />
+                <select id="gender" class="form-control" ng-model="student.gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>   
+            <div> 
+                <span>Training Type:</span><br />
+                    <label><input value="online" type="radio" name="training" ng-model="student.trainingType" />Online</label><br />
+                    <label><input value="onsite" type="radio" name="training" ng-model="student.trainingType" class="form-control"/>OnSite</label> <br /><br />
+                <span>Subjects</span><br />
+                    <label><input type="checkbox" ng-model="student.maths" />Maths</label> <br />
+                    <label><input type="checkbox" ng-model="student.physics" />Physics</label> <br />
+                    <label><input type="checkbox"  ng-model="student.chemistry" />Chemistry</label><br /><br />
+       <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary"/>
+        <input type="reset" ng-click="resetForm()" value="Reset" class="btn btn-primary"/>
+    </div>
+    </form>
+    </div></div>
+    <script>
+        //1. create app module 
+        var studentApp = angular.module('studentApp', []);
+
+        //2. create controller
+        studentApp.controller("studentController", function ($scope, $http) {
+  
+            //3. attach originalStudent model object
+            $scope.originalStudent = {
+                firstName: 'James',
+                lastName: 'Bond',
+                DoB: new Date('01/31/1980'),
+                gender: 'male',
+                trainingType: 'online',
+                maths: false,
+                physics: true,
+                chemistry: true
+            };
+
+            //4. copy originalStudent to student. student will be bind to a form 
+            $scope.student = angular.copy($scope.originalStudent);
+
+            //5. create submitStudentForm() function. This will be called when user submits the form
+            $scope.submitStudnetForm = function () {
+
+                var onSuccess = function (data, status, headers, config) {
+                    alert('Student saved successfully.');
+                };
+
+                var onError = function (data, status, headers, config) {
+                    alert('Error occured.');
+                }
+
+                $http({
+            method: "POST",
+            url: '/student/save',
+            data: $scope.student
+         }).then(function (response) {
+            console.log("Result value is : " + parseInt(response));
+            data = response.data;
+        }, function (error) {
+
+        alert("Failed Login");
+        });
+            };
+
+            //6. create resetForm() function. This will be called on Reset button click.  
+            $scope.resetForm = function () {
+                $scope.student = angular.copy($scope.OriginalStudent);
+            };
+    });
+    </script>   
+    <div/> 
+</body>
+</html>
